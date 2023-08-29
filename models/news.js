@@ -7,7 +7,8 @@ const NewsSchema = mongoose.Schema(
         code : Number,
         images : [String],
         text1 : String,
-        text2 : String
+        text2 : String,
+        is_general : Boolean
     }
 )
 
