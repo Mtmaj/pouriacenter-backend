@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 const NewsSchema = mongoose.Schema(
     {
         title : String,
-        date : Date,
+        date: {type: Date, default: Date.now},
         code : Number,
         images : [String],
         text1 : String,
