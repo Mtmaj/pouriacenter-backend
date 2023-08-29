@@ -3,6 +3,8 @@ const { AdminMessageModel } = require("../../../models/admin_message")
 const app = express.Router()
 const { auth_erorr } = require("../../../utils/request_massege")
 const { body,validationResult } = require("express-validator")
+
+
 app.get('/get',async (req,res)=>{
     if(req.headers.admin_auth == true){
         const Messages = await AdminMessageModel.find()
