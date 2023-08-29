@@ -19,7 +19,7 @@ app.get("/get", async (req,res)=> {
 app.get("/getall", async (req,res)=>{
     const pageNumber = req.headers.pageNumber;
     const pageSise = 10;
-    const news = await NewsModel.find()
+    const news = await NewsModel.find({is_general : req.headers.is_general})
     .skip((pageNumber - 1) * pageSise)
     .limit(pageSise);
     res.json({

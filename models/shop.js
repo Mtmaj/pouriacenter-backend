@@ -6,7 +6,7 @@ const ShopSchema = mongoose.Schema(
         name : String,
         logo : String,
         category : String,
-        floor : String,
+        floor : Number,
         tags : [String],
         images : [String],
         description : String,
