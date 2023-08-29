@@ -52,13 +52,17 @@ app.post("/add",[
 
 
 app.delete("/delete", async (req,res)=>{
-    const news = await NewsModel.findByIdAndRemove(req.headers.news_id);
-    if(!news){
-        return res.status(404).json({
-            "error": "the news not found"
-        })
+    if(req.headers.admin_auth){
+        const news = await NewsModel.findByIdAndRemove(req.headers.news_id);
+        if(!news){
+            return res.status(404).json({
+                "error": "the news not found"
+            })
+        }
+        res.status(200).json({"msg":"Deleted The news"})
+    }else{
+        res.status(401).json(auth_erorr)
     }
-    res.status(200).json({"msg":"Deleted The news"})
 })
 
 app.put("/update",[
@@ -66,17 +70,21 @@ app.put("/update",[
     body("text1","لطفا متن 1 خود را وارد کنید").notEmpty().isString(),
     body("text2","لطفا متن 2 خود را وارد کنید").notEmpty().isString()
 ],async(req,res)=>{
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        return res.status(400).json({data: null, errors: errors, message: 'Have Error',yourdata:req.body});
-    }
+    if(req.headers.admin_auth){
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(400).json({data: null, errors: errors, message: 'Have Error',yourdata:req.body});
+        }
 
-    const news = await NewsModel.findByIdAndUpdate(req.headers.news_id, {
-        ...req.body
-    },{new: true});
-    
-    res.json({
-        "msg": "Update successfull !"
-    })
+        const news = await NewsModel.findByIdAndUpdate(req.headers.news_id, {
+            ...req.body
+        },{new: true});
+        
+        res.json({
+            "msg": "Update successfull !"
+        })
+    }else{
+        return res.status(401).json(auth_erorr)
+    }
 })
 module.exports.News = app
