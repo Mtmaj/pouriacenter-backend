@@ -18,13 +18,15 @@ app.get("/get", async (req,res)=> {
 
 app.get("/getall", async (req,res)=>{
     const pageNumber = req.headers.pageNumber;
-    const pageSise = 10;
-    const shop = await ShopModel.find()
-    .skip((pageNumber - 1) * pageSise)
-    .limit(pageSise);
-    res.json({
-        data: shop
-    })
+    const shop = await ShopModel.find(
+        {
+            floor: (req.query.floor==null?{"$ne" : null}:req.query.floor),
+            category : (req.query.categorys==null?{"$ne" : null}:{"$in" : req.query.categorys}),
+            tags : (req.query.tags==null?{"$ne" : null}:{"$in" : req.query.tags}),
+            name : (req.query.search==null?{"$ne" : null}:{"$regex" : req.query.search})
+        }
+    )
+    res.json(shop)
 })
 
 
@@ -93,6 +95,33 @@ app.put("/update",[
     }
 })
 
+app.get("/get-categorys",async (req,res)=>{
+    const shops = await ShopModel.find()
+    var categorys = []
+    for(var i = 0;i<shops.lenght;i++){
+        var is_have = false
+        var index = 0
+        for(var j = 0;j<categorys.length;j++){
+            if(categorys[j].name == shops[i].category){
+                is_have = true
+                index = j
+                break
+            }
+        }
+        if(!is_have){
 
-app.get("")
+            categorys.push(
+                {
+                    name : shops[i].category,
+                    tags : shops[i].tags
+                }
+            )
+        }else{
+            categorys[index].tags = [...new Set([...categorys[index].tags,...shops[i].tags])] 
+        }
+    }
+    res.json(categorys)
+})
+
+
 module.exports.Shop = app
