@@ -4,7 +4,7 @@ const { SocialMediuSchema } = require("./socialmediu")
 const ContactUsSchema = mongoose.Schema(
     {
         phone_numbers : [String],
-        address : [String],
+        address : String,
         location_link : String,
         social_media : [SocialMediuSchema]
     }

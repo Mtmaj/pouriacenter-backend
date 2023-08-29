@@ -6,8 +6,8 @@ const { body,validationResult } = require("express-validator")
 
 
 app.get("/get", async (req,res)=> {
-    const news_id = await News.findById(req.headers.new_id);
-    if(!new_id) 
+    const news_id = await NewsModel.findOne({code : req.headers.news_id});
+    if(!news_id) 
     return res.status(404)
     .json({
         "msg": "New not found"
@@ -35,7 +35,7 @@ app.post("/add",[
 ],async (req,res)=>{
     const errors = validationResult(req);
     if(!errors.isEmpty()){
-      return res.status(400).json({data: null, errors: errors, message: 'Have Error',yourdata:req.body});
+      return res.status(400).json({errors: errors.errors,});
     }
     if(req.headers.admin_auth == true){
         let news = new NewsModel({
@@ -43,7 +43,7 @@ app.post("/add",[
         })
         await news.save()
         res.json({
-            "status" : "Updated News"
+            "status" : "Add News"
         })
     }else{
         return res.status(401).json(auth_erorr)
@@ -52,12 +52,13 @@ app.post("/add",[
 
 
 app.delete("/delete", async (req,res)=>{
-    const news = await NewsModel.findByIdAndRemove(req.headers.new_id);
+    const news = await NewsModel.findByIdAndRemove(req.headers.news_id);
     if(!news){
         return res.status(404).json({
             "error": "the news not found"
         })
     }
+    res.status(200).json({"msg":"Deleted The news"})
 })
 
 app.put("/update",[
@@ -70,11 +71,8 @@ app.put("/update",[
         return res.status(400).json({data: null, errors: errors, message: 'Have Error',yourdata:req.body});
     }
 
-    const news = await NewsModel.findByIdAndUpdate(req.headers.update_news_id, {
-        title: req.body.title,
-        images: req.body.images,
-        text1: req.body.text1,
-        text2: req.body.text2
+    const news = await NewsModel.findByIdAndUpdate(req.headers.news_id, {
+        ...req.body
     },{new: true});
     
     res.json({

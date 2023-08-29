@@ -10,10 +10,10 @@ app.get('/get',async (req,res)=>{
 
 app.post("/add",async (req,res)=>{
     if(req.headers.admin_auth == true){
-        let aboutus = new ContactUsModel({
+        let contactus = new ContactUsModel({
             ...req.body
         }) 
-        await aboutus.save()
+        await contactus.save()
         res.json({
             "status" : "Updated Contact Us"
         })
