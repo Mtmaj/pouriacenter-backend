@@ -2,6 +2,7 @@ const express = require("express")
 const cors = require("cors")
 const config = require("config")
 const { auth } = require("./middlewares/auth")
+const { Route } = require("./routers/main")
 const database = require("./database/index").DataBase
 
 const app = express()
@@ -16,9 +17,7 @@ app.use(express.json())
 
 app.use(auth)
 
-app.get('/',(req,res)=>{
-    return res.json()
-})
+app.use('/api/',Route)
 
 app.listen(
     config.get('app.port'),
