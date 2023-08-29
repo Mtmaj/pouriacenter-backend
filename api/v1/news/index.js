@@ -5,7 +5,7 @@ const { auth_erorr } = require("../../../utils/request_massege")
 const { body,validationResult } = require("express-validator")
 
 
-app.get("/new/get", async (req,res)=> {
+app.get("/get", async (req,res)=> {
     const news_id = await News.findById(req.headers.new_id);
     if(!new_id) 
     return res.status(404)
@@ -16,7 +16,7 @@ app.get("/new/get", async (req,res)=> {
 })
 
 
-app.get("/news/getall", async (req,res)=>{
+app.get("/getall", async (req,res)=>{
     const pageNumber = req.headers.pageNumber;
     const pageSise = 10;
     const news = await NewsModel.find()
@@ -26,14 +26,7 @@ app.get("/news/getall", async (req,res)=>{
         data: news
     })
 })
-/*
-        title : String,
-        date : Date,
-        code : Number,
-        images : [String],
-        text1 : String,
-        text2 : String
-*/
+
 
 app.post("/add",[
     body("title","لطفا تایتل یا تیتر خبر خود را وارد کنید").notEmpty().isString(),
