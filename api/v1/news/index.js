@@ -29,9 +29,9 @@ app.get("/getall", async (req,res)=>{
 
 
 app.post("/add",[
-    body("title","لطفا تایتل یا تیتر خبر خود را وارد کنید").notEmpty().isString(),
-    body("text1","لطفا متن 1 خود را وارد کنید").notEmpty().isString(),
-    body("text2","لطفا متن 2 خود را وارد کنید").notEmpty().isString()
+    body("title","تایتل یا تیتر خبر خود را وارد کنید").notEmpty().isString(),
+    body("text1","متن 1 خود را وارد کنید").notEmpty().isString(),
+    body("text2","متن 2 خود را وارد کنید").notEmpty().isString()
 ],async (req,res)=>{
     const errors = validationResult(req);
     if(!errors.isEmpty()){
