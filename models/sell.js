@@ -4,14 +4,16 @@ const SellSchema = mongoose.Schema(
     {
         name : String,
         images : [String],
-        tags : [Strings],
+        tags : [String],
         feature : [String],
+        meterage : Number,
         price : Number,
         date : {type: Date, default: Date.now},
+        address : String,
         status : Boolean
     }
 )
 
-const SellModel = mongoose.model("Rent",SellSchema)
+const SellModel = mongoose.model("Sell",SellSchema)
 
 module.exports.SellModel = SellModel

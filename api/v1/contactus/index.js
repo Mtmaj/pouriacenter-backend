@@ -5,7 +5,7 @@ const { auth_erorr } = require("../../../utils/request_massege")
 
 app.get('/get',async (req,res)=>{
     const ContactUS = await ContactUsModel.find()
-    return res.json(ContactUS.last())
+    return res.json(ContactUS[ContactUS.length - 1])
 })
 
 app.post("/add",async (req,res)=>{

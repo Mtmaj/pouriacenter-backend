@@ -21,44 +21,48 @@ app.get("/sell/get", async (req,res)=> {
             if(){}
         }*/
     const sellshop_id = await SellModel.findById(req.headers.sellshop_id);
-    if(!sellshop_id) 
+    if(sellshop_id == null){ 
     return res.status(404)
     .json({
         "msg": "Not found"
-    })
-    res.json({data: sellshop_id})
+    })}
+    res.json(sellshop_id)
 })
 
 
 app.get("/sell/getall", async (req,res)=>{
-    const pageNumber = req.headers.pageNumber;
-    const pageSise = 10;
-    if(req.headers.admin_auth == true){
-        const sellshopadmin = await SellModel.find()
-        .skip((pageNumber - 1) * pageSise)
-        .limit(pageSise);
-        res.json({
-            data: sellshopadmin
-        })
-    }else{
-        const sellshop = await SellModel.find({status: true})
-        .skip((pageNumber - 1) * pageSise)
-        .limit(pageSise);
-        res.json({
-            data: sellshop
-        })
-    }
+    console.log(req.query.start_price)
+    const sellshopadmin = await SellModel.find(
+        {
+            price : {$lte:(req.query.end_price == null?30000000000:req.query.end_price),$gte:(req.query.start_price == null?0:req.query.start_price)},
+            name : (req.query.search==null?{"$ne" : null}:{"$regex" : req.query.search}),
+            meterage : {$lte:(req.query.end_meterage == null?Number.POSITIVE_INFINITY:req.query.end_meterage),$gte:(req.query.start_meterage == null?0:req.query.start_meterage)},
+            tags : (req.query.tags==null?{"$ne" : null}:{"$in" : req.query.tags})
+        }
+        
+    ).sort((req.query.sort==null?{}:{price : req.query.sort }))
+    res.json(sellshopadmin)
 })
 
+app.get("/sell/tags",async (req,res)=>{
+    const tags_dup = await SellModel.find({},{tags:1,_id:0})
+    var list_tags = []
+    tags_dup.forEach((item)=>{
+        list_tags.push(...item.tags)
+    })
+    var set_tags = [...new Set([...list_tags])]
+    return res.json(set_tags)
+})
 
 app.post("/sell/add",[
     body("name","نام مغازه برای فروش را وارد کنید").notEmpty().isString(),
-    body("tags","لطفا تگ های مغازه برای فروش را وارد کنید").notEmpty().isString(),
-    body("feature","ویژگی های مغازه برای فروش خود را وارد کنید").notEmpty().isString(),
+    body("tags","لطفا تگ های مغازه برای فروش را وارد کنید").notEmpty(),
+    body("feature","ویژگی های مغازه برای فروش خود را وارد کنید").notEmpty(),
     body("price","قیمت مغازه برای فروش را وارد کنید").notEmpty(),
-    body("status","وضعیت مغازه خود را انتاب کنید").notEmpty().isBolean()
+    body("address","آدرس را وارد کنید").notEmpty(),
 ],async (req,res)=>{
     const errors = validationResult(req);
+    console.log(errors)
     if(!errors.isEmpty()){
       return res.status(400).json({errors: errors.errors,});
     }
@@ -93,10 +97,10 @@ app.delete("/sell/delete", async (req,res)=>{
 
 app.put("/sell/update",[
     body("name","نام مغازه برای فروش را وارد کنید").notEmpty().isString(),
-    body("tags","لطفا تگ های مغازه برای فروش را وارد کنید").notEmpty().isString(),
-    body("feature","ویژگی های مغازه برای فروش خود را وارد کنید").notEmpty().isString(),
+    body("tags","لطفا تگ های مغازه برای فروش را وارد کنید").notEmpty(),
+    body("feature","ویژگی های مغازه برای فروش خود را وارد کنید").notEmpty(),
     body("price","قیمت مغازه برای فروش را وارد کنید").notEmpty(),
-    body("status","وضعیت مغازه خود را انتاب کنید").notEmpty().isBolean()
+    body("address","آدرس را وارد کنید").notEmpty(),
 ],async(req,res)=>{
     if(req.headers.admin_auth){
         const errors = validationResult(req);
@@ -119,44 +123,37 @@ app.put("/sell/update",[
 
 
 app.get("/rent/get", async (req,res)=> {
-    const rentshop_id = await ShopModel.findById(req.headers.rentshop_id);
-    if(!rentshop_id) 
+    const rentshop_id = await RentModel.findById(req.headers.rentshop_id);
+    if(rentshop_id == null){ 
     return res.status(404)
     .json({
         "msg": "Shop not found"
-    })
-    res.json({data: rentshop_id})
+    })}
+    res.json(rentshop_id)
 })
 
 
 app.get("/rent/getall", async (req,res)=>{
-    const pageNumber = req.headers.pageNumber;
-    const pageSise = 10;
-    if(req.headers.admin_auth == true){
-        const rentshopadmin = await RentModel.find()
-        .skip((pageNumber - 1) * pageSise)
-        .limit(pageSise);
-        res.json({
-            data: rentshopadmin
-        })
-    }else{
-        const rentshop = await RentModel.find({status: true})
-        .skip((pageNumber - 1) * pageSise)
-        .limit(pageSise);
-        res.json({
-            data: rentshop
-        })
-    }
+    const rentshopadmin = await RentModel.find(
+        {
+            rent_price : {$lte:(req.query.end_rent_price == null?3000000000000000:req.query.end_rent_price),$gte:(req.query.start_rent_price == null?0:req.query.start_rent_price)},
+            mortgage_price : {$lte:(req.query.end_mortgage_price == null?30000000000000000:req.query.end_mortgage_price),$gte:(req.query.start_mortgage_price == null?0:req.query.start_mortgage_price)},
+            name : (req.query.search==null?{"$ne" : null}:{"$regex" : req.query.search}),
+            meterage : {$lte:(req.query.end_meterage == null?Number.POSITIVE_INFINITY:req.query.end_meterage),$gte:(req.query.start_meterage == null?0:req.query.start_meterage)},
+            tags : (req.query.tags==null?{"$ne" : null}:{"$in" : req.query.tags})
+        }
+    )
+    res.json(rentshopadmin)
 })
 
 
 app.post("/rent/add",[
-    body("name","نام مغازه برای اجاره را وارد کنید").notEmpty().isString(),
-    body("tags","لطفا تگ های مغازه برای اجاره را وارد کنید").notEmpty().isString(),
-    body("feature","ویژگی های مغازه برای اجاره خود را وارد کنید").notEmpty().isString(),
-    body("rent_price","قیمت مغازه برای اجاره را وارد کنید").notEmpty(),
-    body("mortgage_price","قیمت مغازه برای رهن را وارد کنید").notEmpty(),
-    body("status","وضعیت مغازه خود را انتخاب کنید").notEmpty().isBolean()
+    body("name","نام مغازه برای فروش را وارد کنید").notEmpty().isString(),
+    body("tags","لطفا تگ های مغازه برای فروش را وارد کنید").notEmpty(),
+    body("feature","ویژگی های مغازه برای فروش خود را وارد کنید").notEmpty(),
+    body("rent_price","قیمت اجاره مغازه برای فروش را وارد کنید").notEmpty(),
+    body("mortgage_price","قیمت رهن مغازه برای فروش را وارد کنید").notEmpty(),
+    body("address","آدرس را وارد کنید").notEmpty(),
 ],async (req,res)=>{
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -192,12 +189,12 @@ app.delete("/rent/delete", async (req,res)=>{
 
 
 app.put("/rent/update",[
-    body("name","نام مغازه برای اجاره را وارد کنید").notEmpty().isString(),
-    body("tags","لطفا تگ های مغازه برای اجاره را وارد کنید").notEmpty().isString(),
-    body("feature","ویژگی های مغازه برای اجاره خود را وارد کنید").notEmpty().isString(),
-    body("rent_price","قیمت مغازه برای اجاره را وارد کنید").notEmpty(),
-    body("mortgage_price","قیمت مغازه برای رهن را وارد کنید").notEmpty(),
-    body("status","وضعیت مغازه خود را انتخاب کنید").notEmpty().isBolean()
+    body("name","نام مغازه برای فروش را وارد کنید").notEmpty().isString(),
+    body("tags","لطفا تگ های مغازه برای فروش را وارد کنید").notEmpty(),
+    body("feature","ویژگی های مغازه برای فروش خود را وارد کنید").notEmpty(),
+    body("rent_price","قیمت اجاره مغازه برای فروش را وارد کنید").notEmpty(),
+    body("mortgage_price","قیمت رهن مغازه برای فروش را وارد کنید").notEmpty(),
+    body("address","آدرس را وارد کنید").notEmpty(),
 ],async(req,res)=>{
     if(req.headers.admin_auth){
         const errors = validationResult(req);
@@ -213,6 +210,16 @@ app.put("/rent/update",[
     }else{
         return res.status(401).json(auth_erorr)
     }
+})
+
+app.get("/rent/tags",async (req,res)=>{
+    const tags_dup = await RentModel.find({},{tags:1,_id:0})
+    var list_tags = []
+    tags_dup.forEach((item)=>{
+        list_tags.push(...item.tags)
+    })
+    var set_tags = [...new Set([...list_tags])]
+    return res.json(set_tags)
 })
 
 module.exports.SellAndRent = app

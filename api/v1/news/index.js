@@ -7,26 +7,32 @@ const { body,validationResult } = require("express-validator")
 
 app.get("/get", async (req,res)=> {
     const news_id = await NewsModel.findOne({code : req.headers.news_id});
-    if(!news_id) 
+    if(news_id == null){ 
     return res.status(404)
     .json({
         "msg": "New not found"
-    })
-    res.json({data: news_id})
+    })}
+    res.json(news_id)
 })
 
 
 app.get("/getall", async (req,res)=>{
     const pageNumber = req.headers.pageNumber;
     const pageSise = 10;
+    if(req.headers.is_general == null){
+        req.headers.is_general = false
+    }
     const news = await NewsModel.find({is_general : req.headers.is_general})
     .skip((pageNumber - 1) * pageSise)
     .limit(pageSise);
-    res.json({
-        data: news
+    res.json(
+        news
+    )
     })
+app.get("/getalladmin",async (req,res)=>{
+    const news = await NewsModel.find()
+    res.json(news)
 })
-
 
 app.post("/add",[
     body("title","تایتل یا تیتر خبر خود را وارد کنید").notEmpty().isString(),
@@ -35,12 +41,13 @@ app.post("/add",[
     body("is_general","نوع خبر خود را اتخاب کنید").isBoolean()
 ],async (req,res)=>{
     const errors = validationResult(req);
+    console.log(errors)
     if(!errors.isEmpty()){
       return res.status(400).json({errors: errors.errors,});
     }
     const is_code = NewsModel.findOne({code:req.body.code})
-    if(is_code)
-    return res.status(400).json({"msg":"کد وارد شده تکراری می باشد"})
+    if(is_code == null){
+    return res.status(400).json({"msg":"کد وارد شده تکراری می باشد"})}
     if(req.headers.admin_auth == true){
         let news = new NewsModel({
             ...req.body

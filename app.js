@@ -12,7 +12,7 @@ const my_db = new database()
 my_db.connect()
 
 app.use(cors())
-
+app.use((req,res,next)=>{console.log("new request ",req.path);next()})
 app.use(express.json())
 
 app.use(auth)
