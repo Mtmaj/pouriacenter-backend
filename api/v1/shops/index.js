@@ -7,23 +7,25 @@ const { body,validationResult } = require("express-validator")
 
 app.get("/get", async (req,res)=> {
     const shop_id = await ShopModel.findById(req.headers.shop_id);
-    if(!shop_id) 
+    if(shop_id == null){ 
     return res.status(404)
     .json({
         "msg": "Shop not found"
-    })
-    res.json({data: shop_id})
+    })}
+    res.json(shop_id)
 })
 
 
 app.get("/getall", async (req,res)=>{
     const pageNumber = req.headers.pageNumber;
+    console.log(req.query)
     const shop = await ShopModel.find(
         {
             floor: (req.query.floor==null?{"$ne" : null}:req.query.floor),
             category : (req.query.categorys==null?{"$ne" : null}:{"$in" : req.query.categorys}),
             tags : (req.query.tags==null?{"$ne" : null}:{"$in" : req.query.tags}),
-            name : (req.query.search==null?{"$ne" : null}:{"$regex" : req.query.search})
+            name : (req.query.search==null?{"$ne" : null}:{"$regex" : req.query.search}),
+            is_brand:(req.query.is_brand==null?{"$ne" : null}:req.query.is_brand)
         }
     )
     res.json(shop)
@@ -33,8 +35,8 @@ app.get("/getall", async (req,res)=>{
 app.post("/add",[
     body("name","اسم مغازه را وارد کنید").notEmpty().isString(),
     body("category","دسته بندی مغازه را وارد کنید").notEmpty().isString(),
-    body("floor","طبقه مغازه را وارد کنید").notEmpty().isString(),
-    body("tags","تگ های مغازه را با استفاده از | جدا کنید").notEmpty().isString(),
+    body("floor","طبقه مغازه را وارد کنید").notEmpty(),
+    body("tags","تگ های مغازه را با استفاده از | جدا کنید").notEmpty(),
     body("description","اطلاعات و توضیحات مغازه را وارد کنید").notEmpty().isString(),
     body("address","موقعیت و ادرس مغازه را وارد کنید").notEmpty().isString()
 ],async (req,res)=>{
@@ -59,7 +61,7 @@ app.post("/add",[
 app.delete("/delete", async (req,res)=>{
     if(req.headers.admin_auth){
         const shop = await ShopModel.findByIdAndRemove(req.headers.shop_id);
-        if(!shop){
+        if(shop == null){
             return res.status(404).json({
                 "error": "The shop was not found"
             })
@@ -74,8 +76,8 @@ app.delete("/delete", async (req,res)=>{
 app.put("/update",[
     body("name","اسم مغازه را وارد کنید").notEmpty().isString(),
     body("category","دسته بندی مغازه را وارد کنید").notEmpty().isString(),
-    body("floor","طبقه مغازه را وارد کنید").notEmpty().isString(),
-    body("tags","تگ های مغازه را با استفاده از | جدا کنید").notEmpty().isString(),
+    body("floor","طبقه مغازه را وارد کنید").notEmpty(),
+    body("tags","تگ های مغازه را با استفاده از | جدا کنید").notEmpty(),
     body("description","اطلاعات و توضیحات مغازه را وارد کنید").notEmpty().isString(),
     body("address","موقعیت و ادرس مغازه را وارد کنید").notEmpty().isString()
 ],async(req,res)=>{
@@ -84,7 +86,7 @@ app.put("/update",[
         if(!errors.isEmpty()){
             return res.status(400).json({data: null, errors: errors, message: 'Have Error',yourdata:req.body});
         }
-        const shop = await NewsModel.findByIdAndUpdate(req.headers.shop_id, {
+        const shop = await ShopModel.findByIdAndUpdate(req.headers.shop_id, {
             ...req.body
         },{new: true});
         res.json({
@@ -98,7 +100,8 @@ app.put("/update",[
 app.get("/get-categorys",async (req,res)=>{
     const shops = await ShopModel.find()
     var categorys = []
-    for(var i = 0;i<shops.lenght;i++){
+    for(var i = 0;i<shops.length;i++){
+        
         var is_have = false
         var index = 0
         for(var j = 0;j<categorys.length;j++){
@@ -108,12 +111,12 @@ app.get("/get-categorys",async (req,res)=>{
                 break
             }
         }
-        if(!is_have){
-
+        if(is_have == false){
+            
             categorys.push(
                 {
                     name : shops[i].category,
-                    tags : shops[i].tags
+                    tags : [...shops[i].tags]
                 }
             )
         }else{

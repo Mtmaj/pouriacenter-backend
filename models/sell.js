@@ -7,7 +7,7 @@ const SellSchema = mongoose.Schema(
         tags : [String],
         feature : [String],
         meterage : Number,
-        price : Number,
+        price : String,
         date : {type: Date, default: Date.now},
         address : String,
         status : Boolean

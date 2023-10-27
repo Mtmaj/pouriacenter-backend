@@ -3,7 +3,7 @@
         "port": 5000
     },
     "db": {
-        "host": "127.0.0.1",
+        "host": "mongodb://root:inFHpxiPvedF5SMQFglvw1Ip@gina.iran.liara.ir:34342/my-app?authSource=admin",
         "port": 27017,
         "name": "pouriacenter"
     }

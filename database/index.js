@@ -6,7 +6,7 @@ class DataBase{
     url = config.get("db.host");
     db = config.get("db.name");
     connect() {
-        mongoose.connect(`mongodb://${this.url}:${this.port}/${this.db}`).then(()=>{
+        mongoose.connect(this.url).then(()=>{
             console.log("DataBase Connected Successful ")
         }).catch((e)=>{
             console.log(`DataBase Connected Has this Error : ${e}`)

@@ -11,7 +11,8 @@ const ShopSchema = mongoose.Schema(
         images : [String],
         description : String,
         address : String,
-        social_media : [SocialMediuSchema]
+        is_brand : Boolean,
+        social_media : String
     }
 )
 

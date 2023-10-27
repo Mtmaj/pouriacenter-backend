@@ -1,0 +1,10 @@
+{
+    "app" : "pouriacenter-backend",
+    "port" : 5000,
+    "disks" : [
+        {
+            "name" : "data",
+            "mountTo" : "Images"
+        }
+    ]
+}

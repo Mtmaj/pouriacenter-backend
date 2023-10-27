@@ -1,6 +1,7 @@
 const express = require("express")
 const { AboutUs } = require("../api/v1/aboutus/index")
 const { AdminMessage } = require("../api/v1/admin_messages/index")
+const { WorkWithUs } = require("../api/v1/workwithus/index")
 const { ContactUS } = require("../api/v1/contactus/index")
 const { Upload } = require("../api/v1/upload")
 const { News } = require("../api/v1/news/index")
@@ -15,4 +16,5 @@ route.use("/news",News)
 route.use("/shops",Shop)
 route.use("/sellandrent",SellAndRent)
 route.use("/upload",Upload)
+route.use("/workwithus",WorkWithUs)
 module.exports.Route = route

@@ -27,13 +27,13 @@ app.post('/image',(req,res)=>{
             if(err){
                 return res.status(400)
             }
-            res.json({
-                "img_url" : '127.0.0.1:5000/' + img_id
+            return res.json({
+                "img_url" : 'pouriacenter-backend.iran.liara.run/' + img_id
             });
         })
         
     }else{
-        res.status(401).json(auth_erorr)
+        return res.status(401).json(auth_erorr)
     }
     // All good
     

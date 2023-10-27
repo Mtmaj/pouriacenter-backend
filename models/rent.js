@@ -7,8 +7,8 @@ const RentSchema = mongoose.Schema(
         tags : [String],
         feature : [String],
         meterage : Number,
-        mortgage_price : Number,
-        rent_price : Number,
+        mortgage_price : String,
+        rent_price : String,
         date : {type: Date, default: Date.now},
         status : Boolean,
         address : String
